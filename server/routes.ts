@@ -69,7 +69,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "E-mail já cadastrado" });
       }
 
-      const user = await storage.createUser(validatedData);
+      // Garantir que novos usuários não sejam criados como admin
+      const user = await storage.createUser({
+        ...validatedData,
+        isAdmin: false,
+        isSeller: false,
+      });
 
       if (req.session) {
         req.session.userId = user.id;
@@ -99,6 +104,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUserByEmail(email);
       if (!user) {
         return res.status(401).json({ error: "E-mail ou senha incorretos" });
+      }
+
+      // Impedir que admins façam login pela rota de usuário comum
+      if (user.isAdmin) {
+        return res.status(403).json({ error: "Administradores devem usar a área de login administrativa" });
       }
 
       const isValidPassword = await storage.verifyPassword(user, password);
