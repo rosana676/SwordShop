@@ -8,6 +8,11 @@ import UserLogin from "@/pages/UserLogin";
 import UserRegister from "@/pages/UserRegister";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
+import AdminUsers from "@/pages/AdminUsers";
+import AdminProducts from "@/pages/AdminProducts";
+import AdminReports from "@/pages/AdminReports";
+import AdminSupport from "@/pages/AdminSupport";
+import AdminSettings from "@/pages/AdminSettings";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 
@@ -19,6 +24,12 @@ function Router() {
       <Route path="/cadastro" component={UserRegister} />
       <Route path="/admin" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
+      <Route path="/admin/users" component={AdminUsers} />
+      <Route path="/admin/products" component={AdminProducts} />
+      <Route path="/admin/sellers" component={AdminUsers} />
+      <Route path="/admin/reports" component={AdminReports} />
+      <Route path="/admin/support" component={AdminSupport} />
+      <Route path="/admin/settings" component={AdminSettings} />
       <Route component={NotFound} />
     </Switch>
   );
