@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +15,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Send, XCircle } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface SupportTicket {
   id: string;
@@ -39,8 +41,16 @@ interface SupportMessage {
 
 export default function AdminSupport() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   const [selectedTicket, setSelectedTicket] = useState<string | null>(null);
   const [chatMessage, setChatMessage] = useState("");
+
+  useEffect(() => {
+    if (isAuthenticated && user && !user.isAdmin) {
+      navigate("/");
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const style = {
     "--sidebar-width": "16rem",
@@ -49,6 +59,7 @@ export default function AdminSupport() {
 
   const { data: tickets } = useQuery<SupportTicket[]>({
     queryKey: ["/api/admin/support/all"],
+    enabled: isAuthenticated && user?.isAdmin === true,
   });
 
   const { data: messages } = useQuery<SupportMessage[]>({
