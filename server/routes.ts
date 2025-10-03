@@ -551,7 +551,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ========== Support Ticket Routes ==========
-  app.get("/api/support", async (req, res) => {
+  app.get("/api/support/my-tickets", async (req, res) => {
+    if (!req.session?.userId) {
+      return res.status(401).json({ error: "Não autenticado" });
+    }
+
+    try {
+      const tickets = await storage.getUserSupportTickets(req.session.userId);
+      res.json(tickets);
+    } catch (error) {
+      res.status(500).json({ error: "Erro ao buscar tickets" });
+    }
+  });
+
+  app.get("/api/admin/support/all", async (req, res) => {
     if (!req.session?.userId) {
       return res.status(401).json({ error: "Não autenticado" });
     }
@@ -562,10 +575,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const tickets = await storage.getAllSupportTickets();
+      const tickets = await storage.getAllSupportTicketsWithUser();
       res.json(tickets);
     } catch (error) {
       res.status(500).json({ error: "Erro ao buscar tickets" });
+    }
+  });
+
+  app.get("/api/support/:id/messages", async (req, res) => {
+    if (!req.session?.userId) {
+      return res.status(401).json({ error: "Não autenticado" });
+    }
+
+    try {
+      const messages = await storage.getTicketMessages(req.params.id);
+      res.json(messages);
+    } catch (error) {
+      res.status(500).json({ error: "Erro ao buscar mensagens" });
+    }
+  });
+
+  app.post("/api/support/:id/messages", async (req, res) => {
+    if (!req.session?.userId) {
+      return res.status(401).json({ error: "Não autenticado" });
+    }
+
+    try {
+      const user = await storage.getUser(req.session.userId);
+      const message = await storage.createTicketMessage({
+        ticketId: req.params.id,
+        userId: req.session.userId,
+        message: req.body.message,
+        isAdmin: user?.isAdmin || false,
+      });
+
+      await storage.updateSupportTicketStatus(req.params.id, "in_progress");
+
+      res.json(message);
+    } catch (error) {
+      res.status(500).json({ error: "Erro ao enviar mensagem" });
     }
   });
 

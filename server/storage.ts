@@ -13,6 +13,8 @@ import {
   type InsertSupportTicket,
   type ActivityLog,
   type InsertActivityLog,
+  type SupportMessage,
+  type InsertSupportMessage,
 } from "@shared/schema";
 import {
   users,
@@ -22,6 +24,7 @@ import {
   reports,
   supportTickets,
   activityLogs,
+  supportMessages,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql, count, or, ilike } from "drizzle-orm";
@@ -47,10 +50,12 @@ export interface IStorage {
     sellerId?: string;
     status?: string;
     search?: string;
+    approvalStatus?: string;
   }): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
   createProduct(product: InsertProduct): Promise<Product>;
   updateProductStatus(id: string, status: string): Promise<void>;
+  updateProductApproval(id: string, approvalStatus: string, rejectionReason?: string): Promise<void>;
   getProductsBySeller(sellerId: string): Promise<Product[]>;
 
   // Transactions
@@ -79,6 +84,10 @@ export interface IStorage {
     status: string,
     resolvedAt?: Date
   ): Promise<void>;
+
+  // Support Messages
+  getSupportMessagesByTicketId(ticketId: string): Promise<SupportMessage[]>;
+  createSupportMessage(message: InsertSupportMessage): Promise<SupportMessage>;
 
   // Activity Logs
   createActivityLog(log: InsertActivityLog): Promise<ActivityLog>;
@@ -209,7 +218,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateProductApproval(id: string, approvalStatus: string, rejectionReason?: string): Promise<void> {
-    await db.update(products).set({ 
+    await db.update(products).set({
       approvalStatus,
       rejectionReason: rejectionReason || null
     }).where(eq(products.id, id));
@@ -328,6 +337,25 @@ export class DatabaseStorage implements IStorage {
       .update(supportTickets)
       .set({ status, resolvedAt })
       .where(eq(supportTickets.id, id));
+  }
+
+  // Support Messages
+  async getSupportMessagesByTicketId(ticketId: string): Promise<SupportMessage[]> {
+    return db
+      .select()
+      .from(supportMessages)
+      .where(eq(supportMessages.ticketId, ticketId))
+      .orderBy(desc(supportMessages.createdAt));
+  }
+
+  async createSupportMessage(
+    insertMessage: InsertSupportMessage
+  ): Promise<SupportMessage> {
+    const result = await db
+      .insert(supportMessages)
+      .values(insertMessage)
+      .returning();
+    return result[0];
   }
 
   // Activity Logs

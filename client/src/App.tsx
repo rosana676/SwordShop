@@ -17,6 +17,7 @@ import AdminProducts from "@/pages/AdminProducts";
 import AdminReports from "@/pages/AdminReports";
 import AdminSupport from "@/pages/AdminSupport";
 import AdminSettings from "@/pages/AdminSettings";
+import UserSupport from "@/pages/UserSupport"; // Import UserSupport component
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/vender" component={SellProduct} />
       <Route path="/meus-produtos" component={MyProducts} />
       <Route path="/produto/:id" component={ProductDetail} />
+      <Route path="/suporte" component={UserSupport} /> {/* Add user support route */}
       <Route path="/admin" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin/users" component={AdminUsers} />

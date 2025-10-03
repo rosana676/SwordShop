@@ -42,6 +42,11 @@ export default function Header() {
               Vender
             </span>
           </Link>
+          <Link href="/suporte">
+            <span className="text-sm font-medium hover-elevate px-3 py-2 rounded-md cursor-pointer" data-testid="link-support">
+              Suporte
+            </span>
+          </Link>
           <a href="#how-it-works" className="text-sm font-medium hover-elevate px-3 py-2 rounded-md" data-testid="link-how-it-works">
             Como Funciona
           </a>

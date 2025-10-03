@@ -68,6 +68,15 @@ export const supportTickets = pgTable("support_tickets", {
   resolvedAt: timestamp("resolved_at"),
 });
 
+// This table will store individual messages within a support ticket.
+export const supportMessages = pgTable("support_messages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  ticketId: varchar("ticket_id").notNull().references(() => supportTickets.id),
+  senderId: varchar("sender_id").notNull().references(() => users.id), // Can be user or admin
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const activityLogs = pgTable("activity_logs", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id),
@@ -125,6 +134,12 @@ export const insertSupportTicketSchema = createInsertSchema(supportTickets).omit
   resolvedAt: true,
 });
 
+// Support message schemas
+export const insertSupportMessageSchema = createInsertSchema(supportMessages).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Activity log schemas
 export const insertActivityLogSchema = createInsertSchema(activityLogs).omit({
   id: true,
@@ -172,6 +187,9 @@ export type Report = typeof reports.$inferSelect;
 
 export type InsertSupportTicket = z.infer<typeof insertSupportTicketSchema>;
 export type SupportTicket = typeof supportTickets.$inferSelect;
+
+export type InsertSupportMessage = z.infer<typeof insertSupportMessageSchema>;
+export type SupportMessage = typeof supportMessages.$inferSelect;
 
 export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
 export type ActivityLog = typeof activityLogs.$inferSelect;
