@@ -1,6 +1,7 @@
 import { Sword, User, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "wouter";
 
 export default function Header() {
   return (
@@ -10,10 +11,12 @@ export default function Header() {
           <Button variant="ghost" size="icon" className="md:hidden" data-testid="button-menu">
             <Menu className="w-5 h-5" />
           </Button>
-          <div className="flex items-center gap-2">
-            <Sword className="w-6 h-6 text-primary" />
-            <span className="font-heading font-bold text-xl" data-testid="text-logo">Sword Shop</span>
-          </div>
+          <Link href="/">
+            <div className="flex items-center gap-2 cursor-pointer">
+              <Sword className="w-6 h-6 text-primary" />
+              <span className="font-heading font-bold text-xl" data-testid="text-logo">Sword Shop</span>
+            </div>
+          </Link>
         </div>
         
         <nav className="hidden md:flex items-center gap-6">
@@ -29,12 +32,16 @@ export default function Header() {
         </nav>
         
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" data-testid="button-user-menu">
-            <User className="w-5 h-5" />
-          </Button>
-          <Button variant="default" size="sm" className="hidden md:inline-flex" data-testid="button-login">
-            Entrar
-          </Button>
+          <Link href="/login">
+            <Button variant="ghost" size="sm" data-testid="button-login">
+              Entrar
+            </Button>
+          </Link>
+          <Link href="/cadastro">
+            <Button variant="default" size="sm" className="hidden md:inline-flex" data-testid="button-register">
+              Cadastrar
+            </Button>
+          </Link>
         </div>
       </div>
     </header>
