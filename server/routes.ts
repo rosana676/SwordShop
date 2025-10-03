@@ -232,7 +232,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sellerId: req.query.sellerId as string | undefined,
         status: req.query.status as string | undefined,
         search: req.query.search as string | undefined,
+        approvalStatus: req.query.approvalStatus as string | undefined,
       };
+      
+      // Se não for admin, só mostra produtos aprovados
+      const user = req.session?.userId ? await storage.getUser(req.session.userId) : null;
+      if (!user?.isAdmin && !filters.sellerId) {
+        filters.approvalStatus = "approved";
+      }
+      
       const products = await storage.getAllProducts(filters);
       res.json(products);
     } catch (error) {
@@ -306,6 +314,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Status atualizado com sucesso" });
     } catch (error) {
       res.status(400).json({ error: "Erro ao atualizar status" });
+    }
+  });
+
+  app.patch("/api/products/:id/approval", async (req, res) => {
+    if (!req.session?.userId) {
+      return res.status(401).json({ error: "Não autenticado" });
+    }
+
+    const user = await storage.getUser(req.session.userId);
+    if (!user?.isAdmin) {
+      return res.status(403).json({ error: "Acesso negado" });
+    }
+
+    try {
+      const validatedData = updateProductApprovalSchema.parse(req.body);
+      const product = await storage.getProduct(req.params.id);
+      if (!product) {
+        return res.status(404).json({ error: "Produto não encontrado" });
+      }
+
+      await storage.updateProductApproval(
+        req.params.id, 
+        validatedData.approvalStatus,
+        validatedData.rejectionReason
+      );
+
+      const action = validatedData.approvalStatus === "approved" ? "Produto aprovado" : "Produto reprovado";
+      await storage.createActivityLog({
+        userId: req.session.userId,
+        action,
+        details: `${product.title}${validatedData.rejectionReason ? ` - ${validatedData.rejectionReason}` : ""}`,
+      });
+
+      res.json({ message: `Produto ${validatedData.approvalStatus === "approved" ? "aprovado" : "reprovado"} com sucesso` });
+    } catch (error) {
+      res.status(400).json({ error: "Erro ao atualizar aprovação" });
     }
   });
 

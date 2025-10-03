@@ -27,8 +27,11 @@ export const products = pgTable("products", {
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   categoryId: varchar("category_id").notNull().references(() => categories.id),
   sellerId: varchar("seller_id").notNull().references(() => users.id),
+  game: text("game").notNull(),
   imageUrl: text("image_url"),
   status: text("status").notNull().default("active"), // active, sold, inactive
+  approvalStatus: text("approval_status").notNull().default("pending"), // pending, approved, rejected
+  rejectionReason: text("rejection_reason"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -131,6 +134,11 @@ export const insertActivityLogSchema = createInsertSchema(activityLogs).omit({
 // Status update schemas
 export const updateProductStatusSchema = z.object({
   status: z.enum(["active", "sold", "inactive"]),
+});
+
+export const updateProductApprovalSchema = z.object({
+  approvalStatus: z.enum(["approved", "rejected"]),
+  rejectionReason: z.string().optional(),
 });
 
 export const updateTransactionStatusSchema = z.object({

@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
@@ -8,6 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Package, Plus } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface Product {
   id: string;
@@ -18,6 +27,8 @@ interface Product {
   imageUrl?: string;
   status: string;
   createdAt: string;
+  approvalStatus: string; // 'pending', 'approved', 'rejected'
+  rejectionReason?: string;
 }
 
 export default function MyProducts() {
@@ -41,10 +52,23 @@ export default function MyProducts() {
     }
   };
 
+  const getApprovalBadge = (status: string) => {
+    switch (status) {
+      case "pending":
+        return <Badge variant="outline">Pendente</Badge>;
+      case "approved":
+        return <Badge variant="default">Aprovado</Badge>;
+      case "rejected":
+        return <Badge variant="destructive">Reprovado</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col dark">
       <Header />
-      
+
       <main className="flex-1 container px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -98,6 +122,17 @@ export default function MyProducts() {
                       R$ {parseFloat(product.price).toFixed(2)}
                     </span>
                   </div>
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="space-y-1">
+                      {getApprovalBadge(product.approvalStatus)}
+                      {product.rejectionReason && (
+                        <p className="text-xs text-destructive">{product.rejectionReason}</p>
+                      )}
+                    </div>
+                    <Link href={`/produto/${product.id}`}>
+                      <Button size="sm">Ver Detalhes</Button>
+                    </Link>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -120,7 +155,7 @@ export default function MyProducts() {
           </div>
         )}
       </main>
-      
+
       <Footer />
     </div>
   );

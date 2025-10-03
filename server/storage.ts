@@ -161,6 +161,7 @@ export class DatabaseStorage implements IStorage {
     sellerId?: string;
     status?: string;
     search?: string;
+    approvalStatus?: string;
   }): Promise<Product[]> {
     let query = db.select().from(products);
 
@@ -173,6 +174,9 @@ export class DatabaseStorage implements IStorage {
     }
     if (filters?.status) {
       conditions.push(eq(products.status, filters.status));
+    }
+    if (filters?.approvalStatus) {
+      conditions.push(eq(products.approvalStatus, filters.approvalStatus));
     }
     if (filters?.search) {
       conditions.push(
@@ -202,6 +206,13 @@ export class DatabaseStorage implements IStorage {
 
   async updateProductStatus(id: string, status: string): Promise<void> {
     await db.update(products).set({ status }).where(eq(products.id, id));
+  }
+
+  async updateProductApproval(id: string, approvalStatus: string, rejectionReason?: string): Promise<void> {
+    await db.update(products).set({ 
+      approvalStatus,
+      rejectionReason: rejectionReason || null
+    }).where(eq(products.id, id));
   }
 
   async getProductsBySeller(sellerId: string): Promise<Product[]> {

@@ -36,9 +36,9 @@ export default function Header() {
             Marketplace
           </a>
           <Link href="/vender">
-            <a className="text-sm font-medium hover-elevate px-3 py-2 rounded-md" data-testid="link-sell">
+            <span className="text-sm font-medium hover-elevate px-3 py-2 rounded-md cursor-pointer" data-testid="link-sell">
               Vender
-            </a>
+            </span>
           </Link>
           <a href="#how-it-works" className="text-sm font-medium hover-elevate px-3 py-2 rounded-md" data-testid="link-how-it-works">
             Como Funciona
