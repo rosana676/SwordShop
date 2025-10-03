@@ -101,6 +101,12 @@ export const insertTransactionSchema = createInsertSchema(transactions).omit({
   id: true,
   createdAt: true,
   completedAt: true,
+  sellerId: true,
+  buyerId: true,
+  amount: true,
+  status: true,
+}).extend({
+  productId: z.string(),
 });
 
 // Report schemas
@@ -120,6 +126,23 @@ export const insertSupportTicketSchema = createInsertSchema(supportTickets).omit
 export const insertActivityLogSchema = createInsertSchema(activityLogs).omit({
   id: true,
   createdAt: true,
+});
+
+// Status update schemas
+export const updateProductStatusSchema = z.object({
+  status: z.enum(["active", "sold", "inactive"]),
+});
+
+export const updateTransactionStatusSchema = z.object({
+  status: z.enum(["pending", "completed", "cancelled", "disputed"]),
+});
+
+export const updateReportStatusSchema = z.object({
+  status: z.enum(["pending", "reviewed", "resolved"]),
+});
+
+export const updateSupportTicketStatusSchema = z.object({
+  status: z.enum(["open", "in_progress", "resolved", "closed"]),
 });
 
 // Type exports
