@@ -17,6 +17,48 @@ import {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // ========== Auth Routes ==========
+  // Endpoint temporário para criar admin - REMOVER EM PRODUÇÃO
+  app.post("/api/auth/create-admin", async (req, res) => {
+    try {
+      const { name, email, password } = req.body;
+
+      if (!name || !email || !password) {
+        return res.status(400).json({ error: "Nome, e-mail e senha são obrigatórios" });
+      }
+
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ error: "E-mail já cadastrado" });
+      }
+
+      const user = await storage.createUser({
+        name,
+        email,
+        password,
+        isAdmin: true,
+        isSeller: false,
+      });
+
+      await storage.createActivityLog({
+        userId: user.id,
+        action: "Usuário administrador criado",
+        details: user.name,
+      });
+
+      res.json({
+        message: "Administrador criado com sucesso",
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          isAdmin: user.isAdmin,
+        },
+      });
+    } catch (error) {
+      res.status(400).json({ error: "Erro ao criar administrador" });
+    }
+  });
+
   app.post("/api/auth/register", async (req, res) => {
     try {
       const validatedData = insertUserSchema.parse(req.body);
