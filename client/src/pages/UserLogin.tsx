@@ -32,7 +32,12 @@ export default function UserLogin() {
 
       const user = await response.json();
       console.log('Login successful:', user);
-      setLocation('/');
+      
+      if (user.isAdmin) {
+        setLocation('/admin/dashboard');
+      } else {
+        setLocation('/');
+      }
     } catch (error) {
       alert('Erro ao fazer login. Tente novamente.');
     } finally {

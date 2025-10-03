@@ -1,35 +1,32 @@
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect } from "react";
 import { useLocation } from "wouter";
+import { useEffect } from "react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requireAdmin?: boolean;
 }
 
-export default function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
-  const { user, isLoading, isAdmin } = useAuth();
+export function ProtectedRoute({ children }: ProtectedRouteProps) {
+  const { isLoading, isAuthenticated, isAdmin } = useAuth();
   const [, setLocation] = useLocation();
 
   useEffect(() => {
     if (!isLoading) {
-      if (!user) {
-        setLocation(requireAdmin ? '/admin' : '/login');
-      } else if (requireAdmin && !isAdmin) {
-        setLocation('/');
+      if (!isAuthenticated) {
+        setLocation("/admin");
+      } else if (!isAdmin) {
+        setLocation("/");
       }
     }
-  }, [user, isLoading, isAdmin, requireAdmin, setLocation]);
+  }, [isLoading, isAuthenticated, isAdmin, setLocation]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center dark">
-        <p className="text-muted-foreground">Carregando...</p>
-      </div>
-    );
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="text-muted-foreground">Carregando...</div>
+    </div>;
   }
 
-  if (!user || (requireAdmin && !isAdmin)) {
+  if (!isAuthenticated || !isAdmin) {
     return null;
   }
 

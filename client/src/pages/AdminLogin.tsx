@@ -30,6 +30,13 @@ export default function AdminLogin() {
       }
 
       const user = await response.json();
+      
+      if (!user.isAdmin) {
+        alert('Acesso negado. Esta área é restrita a administradores.');
+        await fetch('/api/auth/logout', { method: 'POST' });
+        return;
+      }
+      
       console.log('Admin login successful:', user);
       setLocation('/admin/dashboard');
     } catch (error) {
