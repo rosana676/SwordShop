@@ -25,16 +25,26 @@ export default function UserRegister() {
     
     setLoading(true);
     
-    // TODO: Implement real registration
-    console.log('User registration attempt:', { name, email });
-    
-    // Simulating registration
-    setTimeout(() => {
-      if (name && email && password) {
-        setLocation('/login');
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, isAdmin: false }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        alert(error.error || 'Erro ao cadastrar');
+        return;
       }
+
+      alert('Cadastro realizado com sucesso!');
+      setLocation('/login');
+    } catch (error) {
+      alert('Erro ao cadastrar. Tente novamente.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -136,9 +146,9 @@ export default function UserRegister() {
             <div className="mt-4 text-center text-sm">
               <span className="text-muted-foreground">Já tem uma conta? </span>
               <Link href="/login">
-                <a className="text-primary hover:underline" data-testid="link-login">
+                <span className="text-primary hover:underline cursor-pointer" data-testid="link-login">
                   Entrar
-                </a>
+                </span>
               </Link>
             </div>
           </CardContent>

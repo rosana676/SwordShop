@@ -1,6 +1,7 @@
 import { Users, ShoppingBag, Shield, Flag, MessageSquare, Settings, LayoutDashboard, LogOut } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter } from "@/components/ui/sidebar";
 import { Sword } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const menuItems = [
   { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard, testId: "dashboard" },
@@ -13,6 +14,8 @@ const menuItems = [
 ];
 
 export default function AdminSidebar() {
+  const { logout } = useAuth();
+  
   return (
     <Sidebar>
       <SidebarHeader className="p-4 border-b">
@@ -48,7 +51,7 @@ export default function AdminSidebar() {
       <SidebarFooter className="p-4 border-t">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton data-testid="button-logout">
+            <SidebarMenuButton onClick={logout} data-testid="button-logout">
               <LogOut className="w-4 h-4" />
               <span>Sair</span>
             </SidebarMenuButton>

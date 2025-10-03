@@ -17,16 +17,27 @@ export default function UserLogin() {
     e.preventDefault();
     setLoading(true);
     
-    // TODO: Implement real authentication
-    console.log('User login attempt:', { email });
-    
-    // Simulating login
-    setTimeout(() => {
-      if (email && password) {
-        setLocation('/');
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        alert(error.error || 'Erro ao fazer login');
+        return;
       }
+
+      const user = await response.json();
+      console.log('Login successful:', user);
+      setLocation('/');
+    } catch (error) {
+      alert('Erro ao fazer login. Tente novamente.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -96,9 +107,9 @@ export default function UserLogin() {
             <div className="mt-4 text-center text-sm">
               <span className="text-muted-foreground">Não tem uma conta? </span>
               <Link href="/cadastro">
-                <a className="text-primary hover:underline" data-testid="link-register">
+                <span className="text-primary hover:underline cursor-pointer" data-testid="link-register">
                   Cadastre-se
-                </a>
+                </span>
               </Link>
             </div>
           </CardContent>

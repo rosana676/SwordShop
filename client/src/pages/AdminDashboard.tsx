@@ -6,8 +6,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, ShoppingBag, TrendingUp, AlertCircle } from "lucide-react";
+import ProtectedRoute from "@/components/admin/ProtectedRoute";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function AdminDashboard() {
+  const { user } = useAuth();
   const style = {
     "--sidebar-width": "16rem",
     "--sidebar-width-icon": "3rem",
@@ -26,9 +29,10 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <SidebarProvider style={style as React.CSSProperties}>
-      <div className="flex h-screen w-full dark">
-        <AdminSidebar />
+    <ProtectedRoute requireAdmin={true}>
+      <SidebarProvider style={style as React.CSSProperties}>
+        <div className="flex h-screen w-full dark">
+          <AdminSidebar />
         
         <div className="flex flex-col flex-1 overflow-hidden">
           <header className="flex items-center justify-between p-4 border-b bg-card/50" data-testid="header-admin">
@@ -97,5 +101,6 @@ export default function AdminDashboard() {
         </div>
       </div>
     </SidebarProvider>
+    </ProtectedRoute>
   );
 }

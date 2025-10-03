@@ -16,16 +16,27 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     
-    // TODO: Implement real authentication
-    console.log('Login attempt:', { username });
-    
-    // Simulating login
-    setTimeout(() => {
-      if (username && password) {
-        setLocation('/admin/dashboard');
+    try {
+      const response = await fetch('/api/auth/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: username, password }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        alert(error.error || 'Acesso negado');
+        return;
       }
+
+      const user = await response.json();
+      console.log('Admin login successful:', user);
+      setLocation('/admin/dashboard');
+    } catch (error) {
+      alert('Erro ao fazer login. Tente novamente.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -49,12 +60,12 @@ export default function AdminLogin() {
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="username" data-testid="label-username">
-                Usuário
+                E-mail
               </Label>
               <Input
                 id="username"
-                type="text"
-                placeholder="Digite seu usuário"
+                type="email"
+                placeholder="admindaniel@adm.com"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
