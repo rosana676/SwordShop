@@ -3,9 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function TrustSection() {
   const stats = [
-    { icon: Users, label: "Usuários Ativos", value: "10.000+", testId: "users" },
+    { icon: Users, label: "Usuários Ativos", value: "0", testId: "users" },
     { icon: Shield, label: "Proteção Escrow", value: "100%", testId: "escrow" },
-    { icon: TrendingUp, label: "Transações", value: "50.000+", testId: "transactions" },
+    { icon: TrendingUp, label: "Transações", value: "0", testId: "transactions" },
     { icon: Lock, label: "Segurança", value: "Total", testId: "security" },
   ];
 
