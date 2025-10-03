@@ -32,9 +32,11 @@ export default function Header() {
         </div>
         
         <nav className="hidden md:flex items-center gap-6">
-          <a href="#marketplace" className="text-sm font-medium hover-elevate px-3 py-2 rounded-md" data-testid="link-marketplace">
-            Marketplace
-          </a>
+          <Link href="/">
+            <span className="text-sm font-medium hover-elevate px-3 py-2 rounded-md cursor-pointer" data-testid="link-marketplace">
+              Marketplace
+            </span>
+          </Link>
           <Link href="/vender">
             <span className="text-sm font-medium hover-elevate px-3 py-2 rounded-md cursor-pointer" data-testid="link-sell">
               Vender
