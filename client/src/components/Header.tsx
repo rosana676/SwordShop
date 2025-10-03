@@ -59,18 +59,18 @@ export default function Header() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/meus-produtos">
-                    <a className="cursor-pointer flex items-center w-full">
+                    <span className="cursor-pointer flex items-center w-full">
                       <Package className="w-4 h-4 mr-2" />
                       Meus Produtos
-                    </a>
+                    </span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/vender">
-                    <a className="cursor-pointer flex items-center w-full">
+                    <span className="cursor-pointer flex items-center w-full">
                       <Sword className="w-4 h-4 mr-2" />
                       Vender
-                    </a>
+                    </span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

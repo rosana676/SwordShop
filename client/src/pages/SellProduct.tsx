@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Package } from "lucide-react";
+import { Package, Lock } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Link } from "wouter";
 
 interface Category {
   id: string;
@@ -21,6 +22,7 @@ interface Category {
 export default function SellProduct() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -71,7 +73,7 @@ export default function SellProduct() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title || !formData.description || !formData.price || !formData.categoryId || !formData.game) {
       toast({
         title: "Campos obrigatórios",
@@ -84,10 +86,42 @@ export default function SellProduct() {
     createProductMutation.mutate(formData);
   };
 
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex flex-col dark">
+        <Header />
+        <main className="flex-1 container px-4 py-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="flex items-center gap-3 mb-6">
+              <Lock className="w-8 h-8 text-primary" />
+              <h1 className="font-heading font-bold text-3xl">Acesso Restrito</h1>
+            </div>
+            <Card>
+              <CardContent className="text-center py-8">
+                <p className="text-lg mb-4">
+                  Para vender um produto, você precisa ter uma conta.
+                </p>
+                <div className="flex justify-center gap-4">
+                  <Link href="/login">
+                    <Button>Entrar na sua conta</Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button variant="outline">Criar conta</Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col dark">
       <Header />
-      
+
       <main className="flex-1 container px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center gap-3 mb-6">
@@ -198,7 +232,7 @@ export default function SellProduct() {
           </Card>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
