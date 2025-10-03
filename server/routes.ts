@@ -10,6 +10,7 @@ import {
   insertReportSchema,
   insertSupportTicketSchema,
   updateProductStatusSchema,
+  updateProductApprovalSchema,
   updateTransactionStatusSchema,
   updateReportStatusSchema,
   updateSupportTicketStatusSchema,
