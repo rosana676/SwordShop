@@ -12,6 +12,7 @@ import ProductDetail from "@/pages/ProductDetail";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminUsers from "@/pages/AdminUsers";
+import AdminSellers from "@/pages/AdminSellers";
 import AdminProducts from "@/pages/AdminProducts";
 import AdminReports from "@/pages/AdminReports";
 import AdminSupport from "@/pages/AdminSupport";
@@ -32,7 +33,7 @@ function Router() {
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin/users" component={AdminUsers} />
       <Route path="/admin/products" component={AdminProducts} />
-      <Route path="/admin/sellers" component={AdminUsers} />
+      <Route path="/admin/sellers" component={AdminSellers} />
       <Route path="/admin/reports" component={AdminReports} />
       <Route path="/admin/support" component={AdminSupport} />
       <Route path="/admin/settings" component={AdminSettings} />
