@@ -35,9 +35,11 @@ export default function Header() {
           <a href="#marketplace" className="text-sm font-medium hover-elevate px-3 py-2 rounded-md" data-testid="link-marketplace">
             Marketplace
           </a>
-          <a href="#sell" className="text-sm font-medium hover-elevate px-3 py-2 rounded-md" data-testid="link-sell">
-            Vender
-          </a>
+          <Link href="/vender">
+            <a className="text-sm font-medium hover-elevate px-3 py-2 rounded-md" data-testid="link-sell">
+              Vender
+            </a>
+          </Link>
           <a href="#how-it-works" className="text-sm font-medium hover-elevate px-3 py-2 rounded-md" data-testid="link-how-it-works">
             Como Funciona
           </a>
@@ -56,16 +58,20 @@ export default function Header() {
                 <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <a href="#meus-produtos" className="cursor-pointer">
-                    <Package className="w-4 h-4 mr-2" />
-                    Meus Produtos
-                  </a>
+                  <Link href="/meus-produtos">
+                    <a className="cursor-pointer flex items-center w-full">
+                      <Package className="w-4 h-4 mr-2" />
+                      Meus Produtos
+                    </a>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <a href="#sell" className="cursor-pointer">
-                    <Sword className="w-4 h-4 mr-2" />
-                    Vender
-                  </a>
+                  <Link href="/vender">
+                    <a className="cursor-pointer flex items-center w-full">
+                      <Sword className="w-4 h-4 mr-2" />
+                      Vender
+                    </a>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive">
