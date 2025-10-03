@@ -58,13 +58,17 @@ export default function UserSupport() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error("Erro ao criar ticket");
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Erro ao criar ticket");
+      }
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (newTicket) => {
       queryClient.invalidateQueries({ queryKey: ["/api/support/my-tickets"] });
       setSubject("");
       setMessage("");
+      setSelectedTicket(newTicket.id);
     },
   });
 

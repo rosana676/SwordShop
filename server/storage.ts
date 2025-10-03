@@ -318,6 +318,64 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
+  async getUserSupportTickets(userId: string): Promise<SupportTicket[]> {
+    return db
+      .select()
+      .from(supportTickets)
+      .where(eq(supportTickets.userId, userId))
+      .orderBy(desc(supportTickets.createdAt));
+  }
+
+  async getAllSupportTicketsWithUser(): Promise<any[]> {
+    const result = await db
+      .select({
+        id: supportTickets.id,
+        userId: supportTickets.userId,
+        subject: supportTickets.subject,
+        message: supportTickets.message,
+        status: supportTickets.status,
+        priority: supportTickets.priority,
+        createdAt: supportTickets.createdAt,
+        resolvedAt: supportTickets.resolvedAt,
+        userName: users.name,
+        userEmail: users.email,
+      })
+      .from(supportTickets)
+      .leftJoin(users, eq(supportTickets.userId, users.id))
+      .orderBy(desc(supportTickets.createdAt));
+    return result;
+  }
+
+  async getTicketMessages(ticketId: string): Promise<any[]> {
+    const result = await db
+      .select({
+        id: supportMessages.id,
+        ticketId: supportMessages.ticketId,
+        userId: supportMessages.senderId,
+        message: supportMessages.message,
+        isAdmin: users.isAdmin,
+        createdAt: supportMessages.createdAt,
+        userName: users.name,
+      })
+      .from(supportMessages)
+      .leftJoin(users, eq(supportMessages.senderId, users.id))
+      .where(eq(supportMessages.ticketId, ticketId))
+      .orderBy(supportMessages.createdAt);
+    return result;
+  }
+
+  async createTicketMessage(data: { ticketId: string; userId: string; message: string; isAdmin: boolean }): Promise<SupportMessage> {
+    const result = await db
+      .insert(supportMessages)
+      .values({
+        ticketId: data.ticketId,
+        senderId: data.userId,
+        message: data.message,
+      })
+      .returning();
+    return result[0];
+  }
+
   async createSupportTicket(
     insertTicket: InsertSupportTicket
   ): Promise<SupportTicket> {

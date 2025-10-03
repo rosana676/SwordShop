@@ -629,6 +629,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: req.session.userId,
       });
 
+      // Criar mensagem automática de boas-vindas
+      await storage.createTicketMessage({
+        ticketId: ticket.id,
+        userId: req.session.userId,
+        message: "Espere até que alguém atenda. Obrigado!",
+        isAdmin: false,
+      });
+
       await storage.createActivityLog({
         userId: req.session.userId,
         action: "Ticket de suporte criado",
@@ -637,6 +645,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(ticket);
     } catch (error) {
+      console.error("Erro ao criar ticket:", error);
       res.status(400).json({ error: "Dados inválidos" });
     }
   });
