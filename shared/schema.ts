@@ -132,6 +132,7 @@ export const insertSupportTicketSchema = createInsertSchema(supportTickets).omit
   id: true,
   createdAt: true,
   resolvedAt: true,
+  userId: true,
 });
 
 // Support message schemas

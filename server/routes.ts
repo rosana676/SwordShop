@@ -632,7 +632,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Criar mensagem automática de boas-vindas
       await storage.createTicketMessage({
         ticketId: ticket.id,
-        userId: req.session.userId,
+        userId: ticket.userId,
         message: "Espere até que alguém atenda. Obrigado!",
         isAdmin: false,
       });
