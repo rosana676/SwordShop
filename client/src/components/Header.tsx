@@ -1,9 +1,21 @@
-import { Sword, User, Menu } from "lucide-react";
+
+import { Sword, User, Menu, LogOut, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Header() {
+  const { user, isAuthenticated, logout } = useAuth();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60" data-testid="header-main">
       <div className="container flex h-16 items-center justify-between px-4">
@@ -32,16 +44,50 @@ export default function Header() {
         </nav>
         
         <div className="flex items-center gap-2">
-          <Link href="/login">
-            <Button variant="ghost" size="sm" data-testid="button-login">
-              Entrar
-            </Button>
-          </Link>
-          <Link href="/cadastro">
-            <Button variant="default" size="sm" className="hidden md:inline-flex" data-testid="button-register">
-              Cadastrar
-            </Button>
-          </Link>
+          {isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-2" data-testid="button-profile">
+                  <User className="w-4 h-4" />
+                  <span className="hidden md:inline">{user?.name}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <a href="#meus-produtos" className="cursor-pointer">
+                    <Package className="w-4 h-4 mr-2" />
+                    Meus Produtos
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a href="#sell" className="cursor-pointer">
+                    <Sword className="w-4 h-4 mr-2" />
+                    Vender
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Link href="/login">
+                <Button variant="ghost" size="sm" data-testid="button-login">
+                  Entrar
+                </Button>
+              </Link>
+              <Link href="/cadastro">
+                <Button variant="default" size="sm" className="hidden md:inline-flex" data-testid="button-register">
+                  Cadastrar
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
