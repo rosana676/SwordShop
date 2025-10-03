@@ -8,9 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { MessageSquare, Send } from "lucide-react";
+import { MessageSquare, Send, ArrowLeft } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Link } from "wouter";
 
 interface SupportTicket {
   id: string;
@@ -106,7 +107,14 @@ export default function UserSupport() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-heading font-bold mb-6">Central de Suporte</h1>
+      <div className="flex items-center gap-4 mb-6">
+        <Link href="/">
+          <Button variant="outline" size="icon">
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+        </Link>
+        <h1 className="text-3xl font-heading font-bold">Central de Suporte</h1>
+      </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 space-y-4">
