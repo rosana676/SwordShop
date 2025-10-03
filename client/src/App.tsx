@@ -8,6 +8,7 @@ import UserLogin from "@/pages/UserLogin";
 import UserRegister from "@/pages/UserRegister";
 import SellProduct from "@/pages/SellProduct";
 import MyProducts from "@/pages/MyProducts";
+import ProductDetail from "@/pages/ProductDetail";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminUsers from "@/pages/AdminUsers";
@@ -26,6 +27,7 @@ function Router() {
       <Route path="/cadastro" component={UserRegister} />
       <Route path="/vender" component={SellProduct} />
       <Route path="/meus-produtos" component={MyProducts} />
+      <Route path="/produto/:id" component={ProductDetail} />
       <Route path="/admin" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin/users" component={AdminUsers} />

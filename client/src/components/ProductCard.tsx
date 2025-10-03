@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Shield, Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useLocation } from "wouter";
 
 interface ProductCardProps {
   id: string;
@@ -18,7 +19,9 @@ interface ProductCardProps {
   status: "available" | "in_escrow" | "sold";
 }
 
-export default function ProductCard({ title, game, price, image, seller, status }: ProductCardProps) {
+export default function ProductCard({ id, title, game, price, image, seller, status }: ProductCardProps) {
+  const [, setLocation] = useLocation();
+  
   const statusConfig = {
     available: { label: "Disponível", variant: "default" as const },
     in_escrow: { label: "Em Escrow", variant: "secondary" as const },
@@ -75,7 +78,12 @@ export default function ProductCard({ title, game, price, image, seller, status 
       </CardContent>
       
       <CardFooter className="p-4 pt-0">
-        <Button className="w-full" variant="default" data-testid={`button-buy-${title}`}>
+        <Button 
+          className="w-full" 
+          variant="default" 
+          onClick={() => setLocation(`/produto/${id}`)}
+          data-testid={`button-buy-${title}`}
+        >
           Ver Detalhes
         </Button>
       </CardFooter>

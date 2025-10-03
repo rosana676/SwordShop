@@ -189,6 +189,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // ========== User Routes ==========
+  app.get("/api/users/:id", async (req, res) => {
+    try {
+      const user = await storage.getUser(req.params.id);
+      if (!user) {
+        return res.status(404).json({ error: "Usuário não encontrado" });
+      }
+      
+      res.json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        isSeller: user.isSeller,
+        isAdmin: user.isAdmin,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Erro ao buscar usuário" });
+    }
+  });
+
   // ========== Category Routes ==========
   app.get("/api/categories", async (req, res) => {
     try {
