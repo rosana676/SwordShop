@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Lock } from "lucide-react";
+import { Package, Lock, Upload, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
 
@@ -23,6 +23,8 @@ export default function SellProduct() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -35,6 +37,112 @@ export default function SellProduct() {
   const { data: categories } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
   });
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Arquivo muito grande",
+          description: "A imagem deve ter no máximo 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Formato inválido",
+          description: "Por favor, selecione uma imagem válida.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setImageFile(file);
+      
+      // Criar preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+        setFormData({ ...formData, imageUrl: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview("");
+    setFormData({ ...formData, imageUrl: "" });
+  };
+
+  const validateForm = () => {
+    if (!formData.title.trim()) {
+      toast({
+        title: "Título obrigatório",
+        description: "Por favor, informe o título do produto.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (formData.title.length < 5) {
+      toast({
+        title: "Título muito curto",
+        description: "O título deve ter pelo menos 5 caracteres.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!formData.game.trim()) {
+      toast({
+        title: "Nome do jogo obrigatório",
+        description: "Por favor, informe o nome do jogo.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!formData.categoryId) {
+      toast({
+        title: "Categoria obrigatória",
+        description: "Por favor, selecione uma categoria.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!formData.price || parseFloat(formData.price) <= 0) {
+      toast({
+        title: "Preço inválido",
+        description: "Por favor, informe um preço válido maior que zero.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!formData.description.trim()) {
+      toast({
+        title: "Descrição obrigatória",
+        description: "Por favor, descreva seu produto.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (formData.description.length < 20) {
+      toast({
+        title: "Descrição muito curta",
+        description: "A descrição deve ter pelo menos 20 caracteres.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
+  };
 
   const createProductMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -74,12 +182,7 @@ export default function SellProduct() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.description || !formData.price || !formData.categoryId || !formData.game) {
-      toast({
-        title: "Campos obrigatórios",
-        description: "Por favor, preencha todos os campos.",
-        variant: "destructive",
-      });
+    if (!validateForm()) {
       return;
     }
 
@@ -190,13 +293,66 @@ export default function SellProduct() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="imageUrl">URL da Imagem</Label>
-                  <Input
-                    id="imageUrl"
-                    value={formData.imageUrl}
-                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                    placeholder="https://exemplo.com/imagem.jpg"
-                  />
+                  <Label htmlFor="imageUrl">Imagem do Produto</Label>
+                  
+                  {imagePreview ? (
+                    <div className="relative">
+                      <img 
+                        src={imagePreview} 
+                        alt="Preview" 
+                        className="w-full h-48 object-cover rounded-lg"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2"
+                        onClick={removeImage}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                          id="imageFile"
+                        />
+                        <Label 
+                          htmlFor="imageFile"
+                          className="flex-1 flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg cursor-pointer hover:bg-accent transition-colors"
+                        >
+                          <Upload className="w-5 h-5" />
+                          <span>Carregar imagem do dispositivo</span>
+                        </Label>
+                      </div>
+                      
+                      <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                          <span className="w-full border-t" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                          <span className="bg-background px-2 text-muted-foreground">
+                            ou
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <Input
+                        id="imageUrl"
+                        value={formData.imageUrl}
+                        onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                        placeholder="Cole o link de uma imagem"
+                      />
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Formatos aceitos: JPG, PNG, GIF (máx. 5MB)
+                  </p>
                 </div>
 
                 <div className="space-y-2">
