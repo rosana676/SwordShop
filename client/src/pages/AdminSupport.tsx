@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,16 +41,16 @@ interface SupportMessage {
 
 export default function AdminSupport() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
   const { user, isAuthenticated } = useAuth();
   const [selectedTicket, setSelectedTicket] = useState<string | null>(null);
   const [chatMessage, setChatMessage] = useState("");
 
   useEffect(() => {
     if (isAuthenticated && user && !user.isAdmin) {
-      navigate("/");
+      setLocation("/");
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, setLocation]);
 
   const style = {
     "--sidebar-width": "16rem",
