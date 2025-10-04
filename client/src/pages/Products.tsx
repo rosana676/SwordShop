@@ -38,43 +38,38 @@ export default function Products() {
   
   const urlParams = new URLSearchParams(searchParams);
   const initialSearch = urlParams.get("search") || "";
-  const initialCategory = urlParams.get("category") || "all";
+  const initialCategory = urlParams.get("categoryId") || "all";
   
   const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [category, setCategory] = useState(initialCategory);
   const [localSearchInput, setLocalSearchInput] = useState(initialSearch);
 
+  const queryParams = new URLSearchParams();
+  if (searchTerm) queryParams.append("search", searchTerm);
+  if (category && category !== "all") queryParams.append("categoryId", category);
+  
+  const productsUrl = queryParams.toString() 
+    ? `/api/products?${queryParams.toString()}` 
+    : "/api/products";
+  
   const { data: products = [], isLoading } = useQuery<Product[]>({
-    queryKey: ["/api/products", searchTerm, category],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (searchTerm) params.append("search", searchTerm);
-      if (category && category !== "all") params.append("categoryId", category);
-      
-      const response = await fetch(`/api/products?${params.toString()}`);
-      if (!response.ok) throw new Error("Erro ao buscar produtos");
-      return response.json();
-    },
+    queryKey: [productsUrl],
   });
 
-  const { data: sellers = {} } = useQuery<Record<string, User>>({
+  const { data: allUsers = [] } = useQuery<User[]>({
     queryKey: ["/api/users"],
-    queryFn: async () => {
-      const response = await fetch("/api/users");
-      if (!response.ok) throw new Error("Erro ao buscar usuários");
-      const users = await response.json();
-      return users.reduce((acc: Record<string, User>, user: User) => {
-        acc[user.id] = user;
-        return acc;
-      }, {});
-    },
   });
+
+  const sellers = allUsers.reduce((acc: Record<string, User>, user: User) => {
+    acc[user.id] = user;
+    return acc;
+  }, {});
 
   const handleSearch = () => {
     setSearchTerm(localSearchInput);
     const params = new URLSearchParams();
     if (localSearchInput) params.append("search", localSearchInput);
-    if (category && category !== "all") params.append("category", category);
+    if (category && category !== "all") params.append("categoryId", category);
     setLocation(`/produtos?${params.toString()}`);
   };
 
@@ -82,7 +77,7 @@ export default function Products() {
     setCategory(value);
     const params = new URLSearchParams();
     if (localSearchInput) params.append("search", localSearchInput);
-    if (value && value !== "all") params.append("category", value);
+    if (value && value !== "all") params.append("categoryId", value);
     setLocation(`/produtos?${params.toString()}`);
   };
 

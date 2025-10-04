@@ -13,7 +13,7 @@ export default function HeroSection() {
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (searchTerm) params.append("search", searchTerm);
-    if (category && category !== "all") params.append("category", category);
+    if (category && category !== "all") params.append("categoryId", category);
     setLocation(`/produtos?${params.toString()}`);
   };
 

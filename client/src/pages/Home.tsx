@@ -48,18 +48,14 @@ export default function Home() {
     queryKey: ["/api/products"],
   });
 
-  const { data: sellers = {} } = useQuery<Record<string, User>>({
+  const { data: allUsers = [] } = useQuery<User[]>({
     queryKey: ["/api/users"],
-    queryFn: async () => {
-      const response = await fetch("/api/users");
-      if (!response.ok) throw new Error("Erro ao buscar usuários");
-      const users = await response.json();
-      return users.reduce((acc: Record<string, User>, user: User) => {
-        acc[user.id] = user;
-        return acc;
-      }, {});
-    },
   });
+
+  const sellers = allUsers.reduce((acc: Record<string, User>, user: User) => {
+    acc[user.id] = user;
+    return acc;
+  }, {});
 
   const recentProducts = products.slice(0, 8);
 
