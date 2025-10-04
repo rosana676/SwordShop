@@ -1,10 +1,10 @@
 services:
   - type: web
-    name: meu-app
+    name: swordshop
     env: node
     plan: free
     buildCommand: npm install --include=dev && npm run build
-    startCommand: npm start
+    startCommand: npm run start
     envVars:
       - key: NODE_ENV
         value: production
@@ -12,3 +12,6 @@ services:
         value: "5000"
       - key: SESSION_SECRET
         value: minha-chave-shop
+      - key: DATABASE_URL
+        value: postgresql://swordshop_user:56AgoxRM1rH9KK5QHHj8TjiZJIl1fWzj@dpg-d3gotth5pdvs73emtm4g-a/swordshop
+
