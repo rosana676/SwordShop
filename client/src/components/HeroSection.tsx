@@ -3,13 +3,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
+import { useLocation } from "wouter";
 
 export default function HeroSection() {
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("");
+  const [, setLocation] = useLocation();
 
   const handleSearch = () => {
-    console.log('Buscando:', { searchTerm, category });
+    const params = new URLSearchParams();
+    if (searchTerm) params.append("search", searchTerm);
+    if (category && category !== "all") params.append("category", category);
+    setLocation(`/produtos?${params.toString()}`);
   };
 
   return (
@@ -50,6 +55,7 @@ export default function HeroSection() {
               className="pl-10 h-12 text-base bg-card/80 backdrop-blur-sm border-card-border"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               data-testid="input-hero-search"
             />
           </div>
