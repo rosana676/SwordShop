@@ -14,7 +14,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle, Eye } from "lucide-react";
+import { CheckCircle, XCircle, Eye, Trash2 } from "lucide-react";
 
 interface Product {
   id: string;
@@ -79,6 +79,20 @@ export default function AdminProducts() {
       setShowRejectDialog(false);
       setRejectionReason("");
       toast({ title: "Produto reprovado com sucesso!" });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      const response = await fetch(`/api/admin/products/${productId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Erro ao excluir produto");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({ title: "Produto excluído com sucesso!" });
     },
   });
 
@@ -213,6 +227,7 @@ export default function AdminProducts() {
                           <TableHead>Jogo</TableHead>
                           <TableHead>Preço</TableHead>
                           <TableHead>Status</TableHead>
+                          <TableHead>Ações</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -222,6 +237,19 @@ export default function AdminProducts() {
                             <TableCell>{product.game}</TableCell>
                             <TableCell>R$ {parseFloat(product.price).toFixed(2)}</TableCell>
                             <TableCell>{getApprovalBadge(product.approvalStatus)}</TableCell>
+                            <TableCell>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => {
+                                  if (confirm("Tem certeza que deseja excluir este produto?")) {
+                                    deleteMutation.mutate(product.id);
+                                  }
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>

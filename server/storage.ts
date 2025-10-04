@@ -38,6 +38,7 @@ export interface IStorage {
   verifyPassword(user: User, password: string): Promise<boolean>;
   getAllUsers(): Promise<User[]>;
   updateUserSellerStatus(id: string, isSeller: boolean): Promise<void>;
+  deleteUser(id: string): Promise<void>; // Added deleteUser
 
   // Categories
   getAllCategories(): Promise<Category[]>;
@@ -57,6 +58,7 @@ export interface IStorage {
   updateProductStatus(id: string, status: string): Promise<void>;
   updateProductApproval(id: string, approvalStatus: string, rejectionReason?: string): Promise<void>;
   getProductsBySeller(sellerId: string): Promise<Product[]>;
+  deleteProduct(id: string): Promise<void>; // Added deleteProduct
 
   // Transactions
   getAllTransactions(): Promise<Transaction[]>;
@@ -141,6 +143,10 @@ export class DatabaseStorage implements IStorage {
     isSeller: boolean
   ): Promise<void> {
     await db.update(users).set({ isSeller }).where(eq(users.id, id));
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    await db.delete(users).where(eq(users.id, id));
   }
 
   // Categories
@@ -230,6 +236,10 @@ export class DatabaseStorage implements IStorage {
       .from(products)
       .where(eq(products.sellerId, sellerId))
       .orderBy(desc(products.createdAt));
+  }
+
+  async deleteProduct(id: string): Promise<void> {
+    await db.delete(products).where(eq(products.id, id));
   }
 
   // Transactions

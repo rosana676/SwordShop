@@ -33,6 +33,7 @@ export default function UserLogin() {
       const user = await response.json();
       console.log('Login successful:', user);
       
+      // Redirecionar admin para painel administrativo
       if (user.isAdmin) {
         setLocation('/admin/dashboard');
       } else {

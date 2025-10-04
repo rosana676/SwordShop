@@ -106,11 +106,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: "E-mail ou senha incorretos" });
       }
 
-      // Impedir que admins façam login pela rota de usuário comum
-      if (user.isAdmin) {
-        return res.status(403).json({ error: "Administradores devem usar a área de login administrativa" });
-      }
-
       const isValidPassword = await storage.verifyPassword(user, password);
       if (!isValidPassword) {
         return res.status(401).json({ error: "E-mail ou senha incorretos" });
@@ -747,6 +742,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(activities);
     } catch (error) {
       res.status(500).json({ error: "Erro ao buscar atividades" });
+    }
+  });
+
+  app.delete("/api/admin/products/:id", async (req, res) => {
+    if (!req.session?.userId) {
+      return res.status(401).json({ error: "Não autenticado" });
+    }
+
+    const user = await storage.getUser(req.session.userId);
+    if (!user?.isAdmin) {
+      return res.status(403).json({ error: "Acesso negado" });
+    }
+
+    try {
+      const product = await storage.getProduct(req.params.id);
+      if (!product) {
+        return res.status(404).json({ error: "Produto não encontrado" });
+      }
+
+      await storage.deleteProduct(req.params.id);
+
+      await storage.createActivityLog({
+        userId: req.session.userId,
+        action: "Produto excluído",
+        details: product.title,
+      });
+
+      res.json({ message: "Produto excluído com sucesso" });
+    } catch (error) {
+      res.status(500).json({ error: "Erro ao excluir produto" });
+    }
+  });
+
+  app.delete("/api/admin/users/:id", async (req, res) => {
+    if (!req.session?.userId) {
+      return res.status(401).json({ error: "Não autenticado" });
+    }
+
+    const user = await storage.getUser(req.session.userId);
+    if (!user?.isAdmin) {
+      return res.status(403).json({ error: "Acesso negado" });
+    }
+
+    try {
+      const userToDelete = await storage.getUser(req.params.id);
+      if (!userToDelete) {
+        return res.status(404).json({ error: "Usuário não encontrado" });
+      }
+
+      if (userToDelete.isAdmin) {
+        return res.status(403).json({ error: "Não é possível excluir administradores" });
+      }
+
+      await storage.deleteUser(req.params.id);
+
+      await storage.createActivityLog({
+        userId: req.session.userId,
+        action: "Usuário excluído",
+        details: userToDelete.name,
+      });
+
+      res.json({ message: "Usuário excluído com sucesso" });
+    } catch (error) {
+      res.status(500).json({ error: "Erro ao excluir usuário" });
     }
   });
 

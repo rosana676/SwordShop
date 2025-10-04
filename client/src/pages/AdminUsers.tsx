@@ -4,9 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import ProtectedRoute from "@/components/admin/ProtectedRoute";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
 interface User {
   id: string;
@@ -23,8 +26,31 @@ export default function AdminUsers() {
     "--sidebar-width-icon": "3rem",
   };
 
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
   const { data: users, isLoading } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error);
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({ title: "Usuário excluído com sucesso!" });
+    },
+    onError: (error: Error) => {
+      toast({ title: error.message, variant: "destructive" });
+    },
   });
 
   return (
@@ -62,6 +88,7 @@ export default function AdminUsers() {
                           <TableHead>E-mail</TableHead>
                           <TableHead>Tipo</TableHead>
                           <TableHead>Cadastro</TableHead>
+                          <TableHead>Ações</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -92,6 +119,22 @@ export default function AdminUsers() {
                             </TableCell>
                             <TableCell data-testid={`text-created-${user.id}`} className="text-muted-foreground">
                               {formatDistanceToNow(new Date(user.createdAt), { addSuffix: true, locale: ptBR })}
+                            </TableCell>
+                            <TableCell>
+                              {!user.isAdmin && (
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => {
+                                    if (confirm(`Tem certeza que deseja excluir ${user.name}?`)) {
+                                      deleteMutation.mutate(user.id);
+                                    }
+                                  }}
+                                  disabled={deleteMutation.isPending}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}
