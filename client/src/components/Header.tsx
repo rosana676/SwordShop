@@ -47,9 +47,11 @@ export default function Header() {
               Suporte
             </span>
           </Link>
-          <a href="#how-it-works" className="text-sm font-medium hover-elevate px-3 py-2 rounded-md" data-testid="link-how-it-works">
-            Como Funciona
-          </a>
+          <Link href="/como-funciona">
+            <span className="text-sm font-medium hover-elevate px-3 py-2 rounded-md cursor-pointer" data-testid="link-how-it-works">
+              Como Funciona
+            </span>
+          </Link>
         </nav>
         
         <div className="flex items-center gap-2">

@@ -10,6 +10,7 @@ import UserRegister from "@/pages/UserRegister";
 import SellProduct from "@/pages/SellProduct";
 import MyProducts from "@/pages/MyProducts";
 import ProductDetail from "@/pages/ProductDetail";
+import HowItWorks from "@/pages/HowItWorks";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminUsers from "@/pages/AdminUsers";
@@ -32,6 +33,7 @@ function Router() {
       <Route path="/vender" component={SellProduct} />
       <Route path="/meus-produtos" component={MyProducts} />
       <Route path="/produto/:id" component={ProductDetail} />
+      <Route path="/como-funciona" component={HowItWorks} />
       <Route path="/suporte" component={UserSupport} />
       <Route path="/admin" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
